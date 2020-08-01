@@ -1,0 +1,113 @@
+Shebang to initialize python code
+
+
+Def argparse():
+	Read 1 FASTQ
+	Read 2 FASTQ
+	Read 3 FASTQ
+	Read 4 FASTQ
+	Barcodes of indexes
+	Return object
+
+Rev_comp():
+	‘Given input string, return reverse complement’
+	Input string
+	Replace ‘A’ with ‘t’
+	Replace ‘T’ with ‘A’
+	Replace ‘C’ with ‘g’
+	Replace ‘G’ with ‘c’
+	Replace ‘N’ with ‘N’
+	Make string uppercase
+	Return new string, reverse complement
+
+Def phred_score():
+	‘Returns phred score given input char’
+	Take ord() function of input char
+	Return int from ord() function
+
+Initialize empty dict – barcodes_dict
+Loop through lines of indexes.txt:
+	Extract indexes in column 5 as keys
+	Make the values rev_complement(keys)
+	
+	
+
+Initialize and open 6 different fastq.files named with the following convention:
+[1 of 3 category names].[forward or reverse].fastq
+Category names: matched/hop/unknown
+
+
+Open the 4 read files and initialize an empty list
+Create a loop (of length equal to the total number of records) to run through the 4 files at the same pace, record by record
+At each increment, strip newline/space characters and store Read1, index 1, index 2, and Read 2 in the list (the entire record, including qscore and sequence)
+Initialize 3 counters: matched, hopped and unknown	- unknown includes low quality phred scores
+
+Initialize pos_pair dictionary {} where:
+	Key is index1/index2 in the record
+	Value is number of occurrences of that pair
+
+Def add_dict():
+	Takes as args (dictionary, index 1, index 2)
+	If index 1/index 2 is in dictionary, increment its value by one
+	If index 1/index 2 is not in dictionary, add it as a key and make its value one
+
+
+For each set of records:
+	
+If neither index1 nor index2 are in the barcodes_dict:
+		To unknown.forward.fastq:
+			Write [index 1]-[index 2]
+			Write Read 1
+		To unknown.reverse.fastq:
+			Write [index 2]-[index 1]
+			Write Read 2
+		Increment unknown by one
+
+If index1 and rev_comp(index2) are in the keys of the barcodes_dict:
+		Get phred_score() of index1 and index 2 
+		Store values to score_one and score_two
+		
+		If there is a phred_score less than 20 in either index:
+			To unknown.forward.fastq:
+				[index 1]-[index 2]
+				Write Read 1
+			To unknown.reverse.fastq:
+				[index 2]-[index 1]
+				Write Read 2
+			Increment unknown by 1
+
+		Else, if phred_score of both stays above 20:
+			If index 1 is equivalent to rev_comp of index2:
+				To matched.forward.fastq:
+					Write [index 1]-[index 2]
+					Write Read 1
+					Add_dict( {pos_pair}, index 1, index 2)
+				To matched.reverse.fastq:
+					Write ([index 2]-[index 1])
+					Write Read 2
+					Add_dict( {pos_pair}, index 2, index 1)
+
+				Increment matched by 1
+
+			Else, if index 1 is not equivalent to rev_comp of index2:
+				To hop.forward.fastq:
+					Write [index 1]-[index 2]
+					Write Read 1
+					Add_dict( {pos_pair}, index 1, index 2)
+
+				To hop.reverse.fastq:
+					Write ([index 2]-[index 1])
+					Write Read 2
+					Add_dict( {pos_pair}, index 2, index 1)
+
+				Increment hopped by 1
+
+
+
+Open a file to write to, Summary.txt:
+To summary, print:
+Print matched, hopped and unknown counters to an output file
+Print pos_pair dictionary to the output file
+
+Close summary.txt
+Close all other input and output files
