@@ -1,0 +1,29 @@
+II) What is a good quality score cutoff for index reads and biological read pairs to 
+utilize for sample identification and downstream analysis, respectively?
+ Justify your answer.
+
+Index pairs - The index pairs should be held to a higher quality standard for sample identification than the 
+biological read pairs - 37, would be a good cutoff. We know what their sequence is, inherently, so they should be 
+held to a higher quality standard than the biological read pairs.
+They are, however, long enough indexes, that it is highly unlikely to get a random match (4^8) - so it may also be good practice to 
+to keep indexes that match perfectly regardless of low q-scores. Given what was being sequenced, and the cost of sequencing,
+being more liberal with quality cut-off and less selective with what is kept - with regard to index selection - might be good.
+
+
+Read pairs - Selecting a cut-off of around 33 for the average of a single read would be a good q-score to aim for.
+Removing reads that have averages below that would be a decent idea. This way, many reads are kept (given the cost of
+sequencing, this is a good idea) - it is a good idea, given that there is a depth to sequencing over this genome. Errors can be
+corrected at a later point in time.
+
+A second method - given a larger amount of funding and resources:
+Around 30 would be a good quality score for read pairs - It would cut
+most all the low quality-score reads from the sequencing. A good way to do this would be to look at an individual
+read out of the large set, and if one of the nucleotides sequenced in that position is below the q-score, then remove that read.
+
+
+
+III) zcat 1294_S1_L008_R*_001.fastq.gz | sed -n '2~4p' | grep "N" | wc -l
+
+Read 2 - index 1 - 3976613
+
+Read 3 - index 2 - 3328051
