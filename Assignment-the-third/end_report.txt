@@ -1,0 +1,42 @@
+The user will enter 4 input files, in the following order format:
+Biological Read 1, index 1 (bio-read 1's associated index), index 2, then Biological Read 2, 
+in that order. Another argument is entered for the index file (a list of the indexes used for the experiment 
+and the associated information with them), and then a q-score cutoff value.
+
+The q-score cutoff value is applied to the indexes associated with the biological reads - the index is moved 
+through, nucleotide by nucleotide, and the phred score at each position is examined. If the phred score of any 
+of the positions is below the cutoff, the index and associated reads are "thrown out" and categorized as low quality.
+
+A record, as defined for the purposes of this program, is one set of 4 lines (A header, sequence, "+" line, and phred score line - 
+the four lines in a fastq file) from each of the 4 following files: Bio. Read 1 and 2, and index 1 and 2. Together, these 16 lines 
+comprise a record. All records correspond to each other throughout the progression of the program - e.g.: the fifth record in 
+Bio. Read 1 corresponds (and is processed at the same time as) the fifth record in index 2.
+
+The output will be 4 files for reads with un-matched indexes, and a forward and reverse file for each 
+matched index pair (explained below).
+
+- unk_lowq_forward file
+- unk_lowq_reverse file
+For reads that have indexes that are not in the indexes file, or indexes that have been rated as low quality, 
+by virtue of the q-score cutoff value. These are sorted into forward reads and reverse reads for 
+Biological Read 1 and 2 respectively.
+
+-index_hopped_forward
+-index_hopped_reversed
+For records that have index pairs that do not match each other - to satisfy the criteria for "matched" index pairs 
+one must be in the index list, and the other index must be the reverse complement of that index. Forward and reverse 
+reads are still relative to biological Read 1 and 2, respectively.
+
+The remaining files will be named after the index which is associated with Biological Read 1, and each set of 2 files will 
+still be grouped into forward and reverse in the same manner as the previous categories.
+
+Example:
+C10_match_forward.fq
+C10_match_reverse.fq
+
+To match and fit into this set of groupings, index 1 for the record must be in the list of indexes provided, and index 2 for 
+the record must be the reverse complement of index 1. In addition, the indexes must pass the quality-score filter - that is each 
+position of the index must have a phred score above the q-score cutoff value.
+
+In addition to the files in these 3 categories, a statistics.txt file will be output, showing the overall percentage of occurrence for 
+each of the matched records (e.g.: index A1 matches comprised 3.7% of the overall amount of index matches).
